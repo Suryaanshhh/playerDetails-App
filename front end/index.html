@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Players Information</title>
+</head>
+
+<body>
+    <div class="mainform">
+        <h1>Players Information</h1>
+        <form id="playerForm">
+            <input type="text" name="name" placeholder="Name" id="name" />
+            <input type="text" name="dob" placeholder="Date of Birth" id="dob" />
+
+            <input type="text" name="photoUrl" placeholder="Photo Url" id="photoUrl" />
+
+            <input type="text" name="birthplace" placeholder="Birth Place" id="birthplace" />
+
+
+            <input type="number" name="noOfMatches" placeholder="No Of Matches" id="noOfMatches" />
+
+            <input type="number" name="score" placeholder="Score" id="score" />
+
+            <input type="number" name="fifties" placeholder="Fifties" id="fifties" />
+
+            <input type="number" name="hundreds" placeholder="Hundreds" id="hundreds" />
+
+            <input type="number" name="wicket" placeholder="wicket" id="wicket" />
+
+            <input type="number" name="Average" placeholder="Average" id="Average" />
+
+            <button type="submit"> Submit </button>
+        </form>
+    </div>
+
+    <div class="search">
+        <form id="searchForm">
+            <input id="search" type="search" name="search" placeholder="Search..." />
+            <button type="submit"> Search</button>
+        </form>
+    </div>
+
+    <div id="playerDetails"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.7/axios.min.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const form = document.getElementById("playerForm");
+            form.addEventListener("submit", (event) => {
+                event.preventDefault()
+                const name = document.getElementById("name").value;
+                const dob = document.getElementById("dob").value;
+                const photoUrl = document.getElementById("photoUrl").value;
+                const birthplace = document.getElementById("birthplace").value;
+                const noOfMatches = document.getElementById("noOfMatches").value;
+                const score = document.getElementById("score").value;
+                const fifties = document.getElementById("fifties").value;
+                const hundreds = document.getElementById("hundreds").value;
+                const wicket = document.getElementById("wicket").value;
+                const Average = document.getElementById("Average").value;
+                const formData = {
+                    name,
+                    dob,
+                    photoUrl,
+                    birthplace,
+                    noOfMatches,
+                    score,
+                    fifties,
+                    hundreds,
+                    wicket,
+                    Average,
+                };
+
+                axios
+                    .post("http://localhost:3000/player", formData)
+                    .then((response) => {
+                        console.log(response.data);
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                    });
+            });
+        });
+
+        const search = document.getElementById("search");
+        const formSearch = document.getElementById("searchForm");
+        formSearch.addEventListener("submit", (event) => {
+            event.preventDefault();
+            let player;
+            axios
+                .get("http://localhost:3000/player/" + search.value)
+                .then((response) => {
+                    player = response.data.data[0];
+                    const playerDetails = document.getElementById("playerDetails");
+                    playerDetails.innerHTML = `
+            <h2>${player.name}</h2>
+            <p>Date of Birth: ${player.dob}</p>
+            <img src="${player.photoUrl}" alt="${player.name}">
+            <p>Birth Place: ${player.birthplace}</p>
+            <p>No Of Matches: ${player.noOfMatches}</p>
+            <p>Score: ${player.score}</p>
+            <p>Fifties: ${player.fifties}</p>
+            <p>Hundreds: ${player.hundreds}</p>
+            <p>Wicket: ${player.wicket}</p>
+            <p>Average: ${player.Average}</p>
+            <button id="editBtn" >Edit Details</button>
+            `;
+
+                    const editBtn = document.getElementById("editBtn");
+                    editBtn.addEventListener("click", () => {
+                        console.log("Clicked");
+                        axios
+                            .post("http://localhost:3000/deletePlayer/" + search.value)
+                            .then((result) => {
+                                console.log(result.data);
+                                const name = (document.getElementById("name").value =
+                                    player.name);
+                                const dob = (document.getElementById("dob").value =
+                                    player.dob);
+                                const photoUrl = (document.getElementById("photoUrl").value =
+                                    player.photoUrl);
+                                const birthplace = (document.getElementById(
+                                    "birthplace"
+                                ).value = player.birthplace);
+
+                                const noOfMatches = (document.getElementById(
+                                    "noOfMatches"
+                                ).value = player.noOfMatches);
+                                const score = (document.getElementById("score").value =
+                                    player.score);
+                                const fifties = (document.getElementById("fifties").value =
+                                    player.fifties);
+                                const hundreds = (document.getElementById("hundreds").value =
+                                    player.hundreds);
+                                const wicket = (document.getElementById("wicket").value =
+                                    player.wicket);
+                                const Average = (document.getElementById("Average").value =
+                                    player.Average);
+                            })
+                            .catch((err) => console.log(err));
+                    });
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        });
+    </script>
+</body>
+
+</html>
